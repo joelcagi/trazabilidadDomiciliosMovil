@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/lblidpedidos"
+            android:text="Id pedido: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lblnombrecliente"
+            android:text="Cliente:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lbldireccioncliente"
+            android:text="Dirección:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lbltelefonocliente"
+            android:text="Telefono:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lblvrdomicilio"
+            android:text="Valor domicilio:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lblvrpedido"
+            android:text="Valor pedido:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lblfechaInicio"
+            android:text="Inicio pedido:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:id="@+id/lblfechaFin"
+            android:text="Fin pedido:  "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            />
+
+        <Spinner
+            android:id="@+id/spinnerEstadoPedido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCambioEstado"
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorBlanco"
+            android:text="Cambiar estado" />
+
+        <Button
+            android:id="@+id/btnVerRuta"
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorBlanco"
+            android:text="Ver ruta" />
+
+    </LinearLayout>
+
+</LinearLayout>

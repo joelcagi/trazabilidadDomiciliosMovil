@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="combo_estados"   translatable = "false">
+
+        <item>Seleccione estado pedido</item>
+        <item>Rechazado</item>
+        <item>Entregado</item>
+
+    </string-array>
+
+</resources>
