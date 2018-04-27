@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:paddingTop="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -91,37 +92,57 @@
         <Spinner
             android:id="@+id/spinnerEstadoPedido"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:textSize="20dp" />
+            android:textSize="40dp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:weightSum="5"
         android:orientation="horizontal">
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/btnCambioEstado"
             android:layout_width="160dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp"
             android:background="@color/colorPrimary"
             android:textColor="@color/colorBlanco"
             android:text="Cambiar estado" />
+
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/btnVerRuta"
             android:layout_width="160dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="10dp"
             android:background="@color/colorPrimary"
             android:textColor="@color/colorBlanco"
             android:text="Ver ruta" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

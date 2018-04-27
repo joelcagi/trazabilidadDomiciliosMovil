@@ -6,16 +6,24 @@
     android:layout_height="match_parent"
     android:background="@drawable/la_chispa_al_carbon"
     tools:context=".interfaces.PedidoActivity">
-
-    <TextView
-        android:id="@+id/lblpedidos"
-        android:text="Lista de Pedidos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:textSize="30dp"
-        />
-
-</RelativeLayout>
+<TextView
+    android:id="@+id/lblpedidos"
+    android:text="Lista de Pedidos"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="20dp"
+    android:textSize="30dp"
+    />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contenedorFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_below="@+id/lblpedidos"
+    tools:context=".interfaces.PedidoActivity">
+</FrameLayout>
+    </RelativeLayout>

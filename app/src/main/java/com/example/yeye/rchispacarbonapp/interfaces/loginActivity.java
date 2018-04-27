@@ -24,24 +24,11 @@ public class loginActivity extends AppCompatActivity {
 		Entrar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-			   // Intent i = new Intent(getApplicationContext(), MainActivity.class);
-			   // i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-			  //          Intent.FLAG_ACTIVITY_NEW_TASK);
-			  //  startActivity(i);
+			   Intent i = new Intent(getApplicationContext(), PedidoActivity.class);
+			   i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+			          Intent.FLAG_ACTIVITY_NEW_TASK);
+			   startActivity(i);
 
-
-				// se captura la direccion de envio de pedido de la BD y se le hace casting a
-				// URI para establecer la ruta mas corta para llegar alli
-
-				Uri gmmIntentUri = Uri.parse("google.navigation:q=universidad+del+quindio,+Armenia+Colombia");
-				Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-				mapIntent.setPackage("com.google.android.apps.maps");
-				if (mapIntent.resolveActivity(getPackageManager()) != null) {
-				startActivity(mapIntent);
-				}
-				else{
-					mostrarMensaje("El servicio de ubicación no funciona en el momento");
-				}
 			}
 		});
 
