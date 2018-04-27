@@ -20,7 +20,7 @@ public class loginActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-		Entrar = (Button) findViewById(R.id.btnEntrar);
+		Entrar = findViewById(R.id.btnEntrar);
 		Entrar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -32,6 +32,15 @@ public class loginActivity extends AppCompatActivity {
 			}
 		});
 
+	}
+
+	/**
+	 * Método para eliminar la actividad cuando se accede a la cuenta.
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		finish();
 	}
 
 	/**
