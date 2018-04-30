@@ -1,8 +1,10 @@
 package adaptadorPedido;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,22 +21,43 @@ import java.util.ArrayList;
 
 import entidades.PedidoVo;
 
-import static android.support.v4.content.ContextCompat.startActivity;
-
+/**
+ * Clase adaptadora para llenar el recyclerview con los pedidos asignados al repartidor
+ *
+ * @author Calderón - Gomez - Guerrero
+ */
 public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.PedidosViewHolder> implements View.OnClickListener
 
 {
-
+    /*
+    lista para almacenar los datos de un pedido
+     */
     ArrayList<PedidoVo> listaPedidos;
+    /*
+    oyente del evento de clic sobre un objeto del recyclerview
+     */
     private View.OnClickListener listener;
 
+    /**
+     * Constructor de la clase AdaptadorPedido
+     *
+     * @param listaPedidos, la lista de los pedidos asignados al repartidor
+     */
     public AdaptadorPedido(ArrayList<PedidoVo> listaPedidos) {
         this.listaPedidos = listaPedidos;
     }
 
+    /**
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public PedidosViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, null, false);
+        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        view.setLayoutParams(layoutParams);
         view.setOnClickListener(this);
         return new PedidosViewHolder(view);
     }
@@ -44,18 +67,41 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
         holder.txtidPedido.setText("Id Pedido: " + listaPedidos.get(position).getIdPedido());
         holder.txtCliente.setText("Cliente: " + listaPedidos.get(position).getNombreCliente());
         holder.txtDireccion.setText("Dirección: " + listaPedidos.get(position).getDireccionCliente());
-        String direccionI = ""+listaPedidos.get(position).getDireccionCliente();
-        String aux ="";
-        for (int i = 0; i < direccionI.trim().length(); i++) {
-            if (direccionI.charAt(i)==' '){
+        String direccionI = "" + listaPedidos.get(position).getDireccionCliente();
+
+        /*
+        Armar dirección parametro Google Maps
+         */
+        String aux = "";
+        int pos = 0;
+        if (direccionI.charAt(0) == 'K' && direccionI.charAt(1) == ' ' ||
+                direccionI.charAt(0) == 'k' && direccionI.charAt(1) == ' ') {
+            aux = "carrera+";
+            pos = 2;
+        } else if (direccionI.charAt(0) == 'C' && direccionI.charAt(1) == ' ' ||
+                direccionI.charAt(0) == 'c' && direccionI.charAt(1) == ' ') {
+            aux = "calle+";
+            pos = 2;
+        } else if (direccionI.charAt(0) == 'A' && direccionI.charAt(1) == ' ' ||
+                direccionI.charAt(0) == 'a' && direccionI.charAt(1) == ' ') {
+            aux = "avenida+";
+            pos = 2;
+        }
+
+        for (int i = pos; i < direccionI.trim().length(); i++) {
+            if (direccionI.charAt(i) == ' ') {
                 aux = aux + "+";
-            }else{
+            } else {
                 aux = aux + direccionI.charAt(i);
             }
         }
 
         final String cadena = aux;
 
+        /*
+        variable para establecer el idpedido en el alertdialog
+         */
+        final int codigoP= listaPedidos.get(position).getIdPedido();
 
         holder.txtTelefono.setText("Telefono: " + listaPedidos.get(position).getTelefonoCliente());
         holder.txtVrDomicilio.setText("Costo domicilio: " + listaPedidos.get(position).getCostoDomicilioZona());
@@ -64,9 +110,29 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
         holder.txtFechaFin.setText("Fecha Entrega: " + listaPedidos.get(position).getFechaEntrega());
         holder.btnCambiarEstado.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Toast.makeText(view.getContext(), "Cambio estado pedido (actualizar BD)",
-                        Toast.LENGTH_SHORT).show();
+            public void onClick(final View view) {
+
+                //Implementación del AlertDialog
+                final Context viewD = view.getContext();
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle("Estado Pedido")
+                        .setMessage("¿Desea cambiar el estado del pedido: " + codigoP +"?")
+                        .setPositiveButton("Si",
+                                new DialogInterface.OnClickListener() {
+
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Toast.makeText(viewD, "Cambio estado pedido (actualizar BD)",
+                                                Toast.LENGTH_SHORT).show();
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        }).show();
+
             }
         });
 
@@ -82,8 +148,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                 mapIntent.setPackage("com.google.android.apps.maps");
                 if (mapIntent.resolveActivity(view.getContext().getPackageManager()) != null) {
                     view.getContext().startActivity(mapIntent);
-                }
-                else{
+                } else {
                     Toast.makeText(view.getContext(), "Cuadro la ruta ", Toast.LENGTH_SHORT).show();
                 }
             }

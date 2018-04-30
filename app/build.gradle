@@ -9,7 +9,14 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // Enabling multidex support.
+        multiDexEnabled true
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -29,4 +36,5 @@ dependencies {
     implementation 'com.android.support:design:26.+'
     implementation 'com.google.android.gms:play-services-maps:15.0.0'
     implementation 'com.google.maps.android:android-maps-utils:0.4+'
+    implementation 'com.android.support:multidex:1.0.0'
 }

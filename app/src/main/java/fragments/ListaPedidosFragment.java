@@ -1,5 +1,6 @@
 package fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class ListaPedidosFragment extends Fragment {
 
     ArrayList<PedidoVo> listaPedido;
     RecyclerView recyclerPedido;
+    ProgressDialog progress;
 
 
     public ListaPedidosFragment() {
@@ -83,13 +85,16 @@ public class ListaPedidosFragment extends Fragment {
         listaPedido = new ArrayList<>();
         recyclerPedido = vista.findViewById(R.id.recyclerId);
         recyclerPedido.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerPedido.setHasFixedSize(true);
+        //Se utiliza los datos extraidos de la api rest
         llenarListaPedidos();
         AdaptadorPedido adapter = new AdaptadorPedido(listaPedido);
         recyclerPedido.setAdapter(adapter);
         adapter.setOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Selecciona: " + listaPedido.get(recyclerPedido.getChildAdapterPosition(view)).getIdPedido(),
+                Toast.makeText(getContext(), "Seleccionó el pedido con ID: "
+                                + listaPedido.get(recyclerPedido.getChildAdapterPosition(view)).getIdPedido(),
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -101,15 +106,24 @@ public class ListaPedidosFragment extends Fragment {
      * Método para conectar a la bd y tomar los valores del pedido
      */
     private void llenarListaPedidos() {
-        listaPedido.add(new PedidoVo(1, "John", "calle 22 12 48",
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Consultando...");
+        //Dejarlo ejecutando mientras termina la busqueda
+        progress.show();
+
+        //Proceso para realizar la petición GET
+
+        listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
                 "3154316670", 2000, 10000, "Entregado",
                 new Date(), new Date()));
-        listaPedido.add(new PedidoVo(2, "John", "b 14 de octubre mz c cs 29 90",
+        listaPedido.add(new PedidoVo(2, "John", "c 22 13 26 ",
                 "3154316670", 2000, 10000, "Entregado",
                 new Date(), new Date()));
-        listaPedido.add(new PedidoVo(3, "John", "carrera 21a 14 33",
+        listaPedido.add(new PedidoVo(3, "John", "k 21a 14 33",
                 "3154316670", 2000, 10000, "Entregado",
                 new Date(), new Date()));
+        //Detener el progressDialog cuando termine la busqueda
+        progress.hide();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
