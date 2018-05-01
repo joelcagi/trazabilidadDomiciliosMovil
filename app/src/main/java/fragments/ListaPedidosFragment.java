@@ -30,6 +30,7 @@ import entidades.PedidoVo;
  * create an instance of this fragment.
  */
 public class ListaPedidosFragment extends Fragment {
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -39,11 +40,13 @@ public class ListaPedidosFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
 
-    ArrayList<PedidoVo> listaPedido;
-    RecyclerView recyclerPedido;
-    ProgressDialog progress;
+
+    private OnFragmentInteractionListener mListener;
+    private int codigoR;
+    private ArrayList<PedidoVo> listaPedido;
+    private RecyclerView recyclerPedido;
+    private ProgressDialog progress;
 
 
     public ListaPedidosFragment() {
@@ -74,6 +77,9 @@ public class ListaPedidosFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
+            //Traer codigo repartidor
+            codigoR = getArguments().getInt("Codigo_Repartidor",0);
         }
     }
 
@@ -86,15 +92,19 @@ public class ListaPedidosFragment extends Fragment {
         recyclerPedido = vista.findViewById(R.id.recyclerId);
         recyclerPedido.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerPedido.setHasFixedSize(true);
+
         //Se utiliza los datos extraidos de la api rest
         llenarListaPedidos();
+
+        //Enviar los datos capturados con la petición GET al adapatador para mostrarlos en el Recyclerview
         AdaptadorPedido adapter = new AdaptadorPedido(listaPedido);
         recyclerPedido.setAdapter(adapter);
         adapter.setOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "Seleccionó el pedido con ID: "
-                                + listaPedido.get(recyclerPedido.getChildAdapterPosition(view)).getIdPedido(),
+                                + listaPedido.get(recyclerPedido.getChildAdapterPosition(view)).getIdPedido() +
+                        " del repartidor: " + codigoR,
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -112,6 +122,7 @@ public class ListaPedidosFragment extends Fragment {
         progress.show();
 
         //Proceso para realizar la petición GET
+
 
         listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
                 "3154316670", 2000, 10000, "Entregado",
