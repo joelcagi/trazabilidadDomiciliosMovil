@@ -1,7 +1,5 @@
 package entidades;
 
-import java.util.Date;
-
 /**
  * Clase para almacenar información tomada de la BD de la plataforma web
  */
@@ -37,15 +35,15 @@ public class PedidoVo {
     /*
     la fecha en la que se toma el pedido
      */
-    private Date fechaDespacho;
+    private String fechaDespacho;
     /*
     fecha en la que se entrega el pedido
      */
-    private Date fechaEntrega;
+    private String fechaEntrega;
 
     public PedidoVo(int idPedido, String nombreCliente, String direccionCliente,
                     String telefonoCliente, double costoDomicilioZona, double costoPedido,
-                    String estadoPedido, Date fechaDespacho, Date fechaEntrega) {
+                    String estadoPedido, String fechaDespacho, String fechaEntrega) {
         this.idPedido = idPedido;
         this.nombreCliente = nombreCliente;
         this.direccionCliente = direccionCliente;
@@ -113,19 +111,19 @@ public class PedidoVo {
         this.estadoPedido = estadoPedido;
     }
 
-    public Date getFechaDespacho() {
+    public String getFechaDespacho() {
         return fechaDespacho;
     }
 
-    public void setFechaDespacho(Date fechaDespacho) {
+    public void setFechaDespacho(String fechaDespacho) {
         this.fechaDespacho = fechaDespacho;
     }
 
-    public Date getFechaEntrega() {
+    public String getFechaEntrega() {
         return fechaEntrega;
     }
 
-    public void setFechaEntrega(Date fechaEntrega) {
+    public void setFechaEntrega(String fechaEntrega) {
         this.fechaEntrega = fechaEntrega;
     }
 }

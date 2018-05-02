@@ -14,9 +14,9 @@ import android.widget.Toast;
 
 import com.example.yeye.rchispacarbonapp.R;
 
-
-import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import adaptadorPedido.AdaptadorPedido;
 import entidades.PedidoVo;
@@ -28,6 +28,8 @@ import entidades.PedidoVo;
  * to handle interaction events.
  * Use the {@link ListaPedidosFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ * @author Calderón - Gomez - Guerrero
  */
 public class ListaPedidosFragment extends Fragment {
 
@@ -39,16 +41,31 @@ public class ListaPedidosFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-
-
     private OnFragmentInteractionListener mListener;
+
+    /*
+    Atributo para almacenar el codigo del repartidor
+     */
     private int codigoR;
+
+    /*
+    ArrayList para guardar los pedidos asignados al respartidor desde la BD
+     */
     private ArrayList<PedidoVo> listaPedido;
+
+    /*
+    Recycler para mostrar los datos de los pedidos asignados al repartidor
+     */
     private RecyclerView recyclerPedido;
+
+    /*
+    Progress para representar la espera en el cargue de los datos
+     */
     private ProgressDialog progress;
 
-
+/**
+     * Constructor del fragment
+     */
     public ListaPedidosFragment() {
         // Required empty public constructor
     }
@@ -71,6 +88,9 @@ public class ListaPedidosFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Método donde se guarda el código del repartidor en el atributo codigoR
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,12 +103,19 @@ public class ListaPedidosFragment extends Fragment {
         }
     }
 
+    /**
+     * Método para inicializar la lista y el recyclerview creados
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View vista = inflater.inflate(R.layout.fragment_lista_pedidos, container, false);
+
+        //Inicializar la lista
         listaPedido = new ArrayList<>();
+
+        //Inicializar el recycler
         recyclerPedido = vista.findViewById(R.id.recyclerId);
         recyclerPedido.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerPedido.setHasFixedSize(true);
@@ -98,7 +125,11 @@ public class ListaPedidosFragment extends Fragment {
 
         //Enviar los datos capturados con la petición GET al adapatador para mostrarlos en el Recyclerview
         AdaptadorPedido adapter = new AdaptadorPedido(listaPedido);
+
+        //Enviar el adaptador al recycler creado
         recyclerPedido.setAdapter(adapter);
+
+        //Establecer evento del adaptador (Modo general)
         adapter.setOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,26 +154,34 @@ public class ListaPedidosFragment extends Fragment {
 
         //Proceso para realizar la petición GET
 
+        String fecha = obtenerFechaActual();
 
-        listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
-                "3154316670", 2000, 10000, "Entregado",
-                new Date(), new Date()));
-        listaPedido.add(new PedidoVo(2, "John", "c 22 13 26 ",
-                "3154316670", 2000, 10000, "Entregado",
-                new Date(), new Date()));
-        listaPedido.add(new PedidoVo(3, "John", "k 21a 14 33",
-                "3154316670", 2000, 10000, "Entregado",
-                new Date(), new Date()));
+            listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
+                    "3154316670", 2000, 10000, "Entregado",
+                    fecha, fecha));
+            listaPedido.add(new PedidoVo(2, "John", "c 22 13 26 ",
+                    "3154316670", 2000, 10000, "Entregado",
+                    fecha, fecha));
+            listaPedido.add(new PedidoVo(3, "John", "k 21a 14 33",
+                    "3154316670", 2000, 10000, "Entregado",
+                    fecha, fecha));
+
+
         //Detener el progressDialog cuando termine la busqueda
         progress.hide();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    /**
+     * Método para obtener la fecha actual del sistema en el formato dd/MM/yyyy HH:mm:ss
+     * @return
+     */
+    private String obtenerFechaActual() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
+
+    //Métodos heredados por el fragment (No se utilizan)
 
     @Override
     public void onAttach(Context context) {
@@ -152,6 +191,13 @@ public class ListaPedidosFragment extends Fragment {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+    }
+    // TODO: Rename method, update argument and hook method into UI event
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
         }
     }
 

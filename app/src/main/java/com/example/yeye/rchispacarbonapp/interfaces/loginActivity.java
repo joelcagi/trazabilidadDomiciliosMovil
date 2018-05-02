@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
-
 import com.example.yeye.rchispacarbonapp.R;
 
 /**
@@ -102,4 +100,56 @@ public class loginActivity extends AppCompatActivity {
     private void mostrarMensaje(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+    /**
+     * Método para cargar los datos de la BD (PDTE REVISIÖN)
+     */
+    public void getData(){
+
+        //URL donde se guarda la info
+        String sql = "http://skiboo.com.mx/api/business/rewards/49";
+
+        android.os.StrictMode.ThreadPolicy policy =
+        new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        android.os.StrictMode.setThreadPolicy(policy);
+        java.net.URL url = null;
+        java.net.HttpURLConnection conn;
+
+        try {
+            url = new java.net.URL(sql);
+            conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            String json = "";
+
+            while((inputLine = in.readLine()) != null){
+                response.append(inputLine);
+            }
+
+            json = response.toString();
+            org.json.JSONArray jsonArr = null;
+            jsonArr = new org.json.JSONArray(json);
+            String mensaje = "";
+
+            for(int i = 0;i<jsonArr.length();i++){
+                org.json.JSONObject jsonObject = jsonArr.getJSONObject(i);
+                android.util.Log.d("SALIDA",jsonObject.optString("description"));
+                mensaje += "DESCRIPCION "+i+" "+jsonObject.optString("description")+"\n";
+            }
+
+        } catch (java.net.MalformedURLException e) {
+            e.printStackTrace();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
