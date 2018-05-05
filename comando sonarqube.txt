@@ -1,0 +1,4 @@
+./gradlew sonarqube \
+  -Dsonar.organization=proyecto-movil \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=b6918724ca85f9a10cb09c62ba31fdb1a24a603e
