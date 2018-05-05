@@ -136,7 +136,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      * @param holder el boton del pedido en especifico
      * @param cadena el texto con la dirección en el formato para GoogleMaps
      */
-    private void eventoGenerarRuta(PedidosViewHolder holder, final String cadena) {
+    public void eventoGenerarRuta(PedidosViewHolder holder, final String cadena) {
         holder.btnVerRuta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,7 +162,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      * @param holder el spinner del pedido en especifico
      * @param posRV  la posición en la que se encuentra en el Recyclerview
      */
-    private void CapturarEstadoPedido(PedidosViewHolder holder, final int posRV) {
+    public void CapturarEstadoPedido(PedidosViewHolder holder, final int posRV) {
         holder.comboestado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -178,11 +178,12 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
 
     /**
      * Evento para cambiar el estado de un pedido y acutalizar la BD
-     * @param holder el del botón
+     *
+     * @param holder  el del botón
      * @param codigoP el código del pedido
-     * @param posRV la posición en el recyclerview
+     * @param posRV   la posición en el recyclerview
      */
-    private void eventoCambioPedido(final PedidosViewHolder holder, final int codigoP, final int posRV) {
+    public void eventoCambioPedido(final PedidosViewHolder holder, final int codigoP, final int posRV) {
         holder.btnCambiarEstado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -190,21 +191,26 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                 //Implementación del AlertDialog
                 final Context viewD = view.getContext();
 
-                if (generarAlertDialog(view, viewD, codigoP, posRV)==false){
-                    holder.btnCambiarEstado.setEnabled(false);
-                }
+                generarAlertDialog(view, viewD, codigoP, posRV);
             }
         });
+
+        if (flag == false) {
+            holder.btnCambiarEstado.setEnabled(true);
+            flag = true;
+        }
+
     }
 
     /**
      * Método para generar una alerta antes de cambiar estado de pedido
-     * @param view la vista
-     * @param viewD el contexto de la vista
+     *
+     * @param view    la vista
+     * @param viewD   el contexto de la vista
      * @param codigoP el código del pedido
-     * @param posRV la posición del recyclerview
+     * @param posRV   la posición del recyclerview
      */
-    private boolean generarAlertDialog(View view, final Context viewD, int codigoP, final int posRV) {
+    public void generarAlertDialog(View view, final Context viewD, int codigoP, final int posRV) {
         new AlertDialog.Builder(view.getContext())
                 .setTitle("Estado Pedido")
                 .setMessage("¿Desea cambiar el estado del pedido "
@@ -222,7 +228,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
 
                                 Toast.makeText(viewD, "Cambio estado pedido a '" +
                                                 listaPedidos.get(posRV).getEstadoPedido() +
-                                                "' el " + listaPedidos.get(posRV).getFechaEntrega(),
+                                                "' a las " + listaPedidos.get(posRV).getFechaEntrega(),
                                         Toast.LENGTH_SHORT).show();
                                 flag = false;
 
@@ -237,7 +243,6 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                     }
                 }).show();
 
-        return flag;
     }
 
     /**
@@ -248,7 +253,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      * @param pos,        la posición a iniciar el cargue de datos en la variable aux
      * @return
      */
-    private String construirDireccion(String direccionI, String aux, int pos) {
+    public String construirDireccion(String direccionI, String aux, int pos) {
         if (direccionI.charAt(0) == 'K' && direccionI.charAt(1) == ' ' ||
                 direccionI.charAt(0) == 'k' && direccionI.charAt(1) == ' ') {
             aux = "carrera+";
@@ -278,14 +283,15 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      *
      * @return
      */
-    private String obtenerFechaActual() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    public String obtenerFechaActual() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
     }
 
     /**
      * Método para obtener el tamaño total de la lista de pedidos generada
+     *
      * @return el tamaño de la lista
      */
     @Override
@@ -295,6 +301,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
 
     /**
      * Evento para la selección del recycler en general
+     *
      * @param listener
      */
     public void setOnclickListener(View.OnClickListener listener) {
@@ -303,6 +310,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
 
     /**
      * Evento de selección del recycler
+     *
      * @param view
      */
     @Override
@@ -324,6 +332,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
 
         /**
          * Constructor de la clase PedidosViewHolder
+         *
          * @param itemView
          */
         public PedidosViewHolder(View itemView) {

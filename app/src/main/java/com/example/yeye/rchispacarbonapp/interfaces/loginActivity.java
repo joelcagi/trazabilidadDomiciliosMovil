@@ -1,13 +1,26 @@
 package com.example.yeye.rchispacarbonapp.interfaces;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.yeye.rchispacarbonapp.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Activity que permite a un repartidor iniciar sesión en la aplicación
@@ -29,7 +42,22 @@ public class loginActivity extends AppCompatActivity {
     Campo para almacenar la contraseña
      */
     private TextInputLayout txtContrasenia;
-
+    /*
+    progressDialog para el logueo
+     */
+    private ProgressDialog pDialog;
+    /*
+    Objeto para traer del servicio creado el codigo del usuario
+     */
+    private JsonObjectRequest jsonObjectRequest;
+    /*
+    la request respectiva
+     */
+    private RequestQueue request;
+    /*
+    Código del usuario
+     */
+    private int idUsuario = 0;
 
     /**
      * Método para iniciar la Activity
@@ -40,6 +68,9 @@ public class loginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //Inicializar la request
+        request = Volley.newRequestQueue(this);
 
         //Definición del evento de botón para acceder a los pedidos del repartidor
         Entrar = findViewById(R.id.btnEntrar);
@@ -57,26 +88,17 @@ public class loginActivity extends AppCompatActivity {
 
                 //proceso de la api rest GET
 
+                //consultarUsuario(usuario, contrasenia);
 
-
-                //en caso de que el usuaria exista en la BD (IF)
-
-                //Se autentica el repartidor de domicilios mediante usuario y contraseña,
-                // retornando en caso afirmativo el código de este, el cual permite filtrar
-                // los pedidos asignados para el por parte del administrador
                 Intent i = new Intent(getApplicationContext(), PedidoActivity.class);
 
                 //PENDIENTE PASAR PARAMETRO DE CODIGO DE REPARTIDOR
-                i.putExtra("Codigo_Repartidor", 1);
+                i.putExtra("Codigo_Repartidor", idUsuario);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                         Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 //Iniciar la actividad
                 startActivity(i);
-
-                //En caso de que no este en la BD (ELSE)
-
-                mostrarMensaje("El usuario no se encuentra registrado en el sistema");
 
             }
         });
@@ -104,52 +126,42 @@ public class loginActivity extends AppCompatActivity {
     /**
      * Método para cargar los datos de la BD (PDTE REVISIÖN)
      */
-    public void getData(){
+    private void consultarUsuario(String usuario, String contrasena) {
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Cargando...");
+        pDialog.show();
 
-        //URL donde se guarda la info
-        String sql = "http://skiboo.com.mx/api/business/rewards/49";
+        String url = "PONER_URL_DE_OME?correo(REVISAR NOMBRE)=" + usuario.trim()
+                + "&contrasena(REVISAR NOMBRE)=" + contrasena.trim();
 
-        android.os.StrictMode.ThreadPolicy policy =
-        new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
+        jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                pDialog.hide();
 
-        android.os.StrictMode.setThreadPolicy(policy);
-        java.net.URL url = null;
-        java.net.HttpURLConnection conn;
+                JSONArray json = response.optJSONArray("codigoUsuario (REVISAR BD)");
+                JSONObject jsonObject = null;
 
-        try {
-            url = new java.net.URL(sql);
-            conn = (java.net.HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
+                try {
+                    jsonObject = json.getJSONObject(0);
+                    idUsuario = jsonObject.optInt("id_usuario(REVISAR BD)");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            String json = "";
-
-            while((inputLine = in.readLine()) != null){
-                response.append(inputLine);
             }
-
-            json = response.toString();
-            org.json.JSONArray jsonArr = null;
-            jsonArr = new org.json.JSONArray(json);
-            String mensaje = "";
-
-            for(int i = 0;i<jsonArr.length();i++){
-                org.json.JSONObject jsonObject = jsonArr.getJSONObject(i);
-                android.util.Log.d("SALIDA",jsonObject.optString("description"));
-                mensaje += "DESCRIPCION "+i+" "+jsonObject.optString("description")+"\n";
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(loginActivity.this, "Usuario no registrado "
+                        + error.toString(), Toast.LENGTH_LONG).show();
+                System.out.println();
+                pDialog.hide();
+                Log.d("ERROR: ", error.toString());
             }
+        });
 
-        } catch (java.net.MalformedURLException e) {
-            e.printStackTrace();
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
+        request.add(jsonObjectRequest);
     }
-
-
 }

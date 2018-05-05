@@ -172,11 +172,11 @@ public class ListaPedidosFragment extends Fragment {
     }
 
     /**
-     * Método para obtener la fecha actual del sistema en el formato dd/MM/yyyy HH:mm:ss
+     * Método para obtener la fecha actual del sistema en el formato HH:mm:ss
      * @return
      */
     private String obtenerFechaActual() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
     }
