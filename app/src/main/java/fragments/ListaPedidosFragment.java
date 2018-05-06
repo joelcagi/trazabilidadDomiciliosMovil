@@ -12,11 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.yeye.rchispacarbonapp.R;
 
-import java.text.SimpleDateFormat;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Date;
 
 import adaptadorPedido.AdaptadorPedido;
 import entidades.PedidoVo;
@@ -63,7 +70,7 @@ public class ListaPedidosFragment extends Fragment {
      */
     private ProgressDialog progress;
 
-/**
+    /**
      * Constructor del fragment
      */
     public ListaPedidosFragment() {
@@ -99,7 +106,7 @@ public class ListaPedidosFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
 
             //Traer codigo repartidor
-            codigoR = getArguments().getInt("Codigo_Repartidor",0);
+            codigoR = getArguments().getInt("Codigo_Repartidor", 0);
         }
     }
 
@@ -121,9 +128,25 @@ public class ListaPedidosFragment extends Fragment {
         recyclerPedido.setHasFixedSize(true);
 
         //Se utiliza los datos extraidos de la api rest
-        llenarListaPedidos();
+        //llenarListaPedidos();
 
-        //Enviar los datos capturados con la petición GET al adapatador para mostrarlos en el Recyclerview
+
+        //Borrar luego
+        String fecha = "11:30:30";
+
+        listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
+                "3154316670", 4, 10000, "Pollo",
+                fecha, fecha));
+        listaPedido.add(new PedidoVo(2, "John", "c 22 13 26 ",
+                "3154316670", 5, 10000, "Almuerzo",
+                fecha, fecha));
+        listaPedido.add(new PedidoVo(3, "John", "k 21a 14 33",
+                "3154316670", 7, 10000, "Entregado",
+                fecha, fecha));
+
+        //Borrar luego
+
+        //Enviar los datos capturados con la petición GET al adaptador para mostrarlos en el Recyclerview
         AdaptadorPedido adapter = new AdaptadorPedido(listaPedido);
 
         //Enviar el adaptador al recycler creado
@@ -134,8 +157,9 @@ public class ListaPedidosFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "Seleccionó el pedido con ID: "
-                                + listaPedido.get(recyclerPedido.getChildAdapterPosition(view)).getIdPedido() +
-                        " del repartidor: " + codigoR,
+                                + listaPedido.get(
+                        recyclerPedido.getChildAdapterPosition(view)).getIdPedido()
+                                + " del repartidor: " + codigoR,
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -147,38 +171,62 @@ public class ListaPedidosFragment extends Fragment {
      * Método para conectar a la bd y tomar los valores del pedido
      */
     private void llenarListaPedidos() {
-        progress = new ProgressDialog(getContext());
-        progress.setMessage("Consultando...");
-        //Dejarlo ejecutando mientras termina la busqueda
-        progress.show();
 
         //Proceso para realizar la petición GET
 
-        String fecha = obtenerFechaActual();
+        String DATA_URL = PedidoVo.URL_AMAZON + "asignados?id=" + codigoR;
+        final ProgressDialog loading = ProgressDialog.show(this.getContext(),
+                "Por favor espere...",
+                "Actualizando datos...",
+                false,
+                false);
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                DATA_URL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        loading.dismiss();
+                        try {
+                            //Lista obtenida del servicio
+                            JSONArray lista = response.optJSONArray("factura");
+                            for (int i = 0; i < lista.length(); i++) {
+                                JSONObject json_data = lista.getJSONObject(i);
+                                PedidoVo obj = new PedidoVo(json_data.getInt("id"),
+                                        json_data.getString("cliente.nombre"),
+                                        json_data.getString("cliente.direccion"),
+                                        json_data.getString("cliente.id"),
+                                        json_data.getInt("state"),
+                                        json_data.getDouble("total"),
+                                        json_data.getString("items.nombre"),
+                                        json_data.getString("creado"),
+                                        json_data.getString("entregado"));
+                                listaPedido.add(obj);
+                            }
 
-            listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
-                    "3154316670", 2000, 10000, "Entregado",
-                    fecha, fecha));
-            listaPedido.add(new PedidoVo(2, "John", "c 22 13 26 ",
-                    "3154316670", 2000, 10000, "Entregado",
-                    fecha, fecha));
-            listaPedido.add(new PedidoVo(3, "John", "k 21a 14 33",
-                    "3154316670", 2000, 10000, "Entregado",
-                    fecha, fecha));
+                        } catch (Exception ex) {
+                            mostrarMensaje("Error cargando lista:" + ex.getMessage());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                loading.dismiss();
+                mostrarMensaje("Error en petición:" + error.getMessage());
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this.getContext());
+        requestQueue.add(jsonObjReq);
 
-
-        //Detener el progressDialog cuando termine la busqueda
-        progress.hide();
     }
 
     /**
-     * Método para obtener la fecha actual del sistema en el formato HH:mm:ss
-     * @return
+     * método para mostrar un mensaje toast
+     *
+     * @param message, el mensaje a mostrar
      */
-    private String obtenerFechaActual() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-        Date date = new Date();
-        return dateFormat.format(date);
+    private void mostrarMensaje(String message) {
+        Toast.makeText(this.getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     //Métodos heredados por el fragment (No se utilizan)

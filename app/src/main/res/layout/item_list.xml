@@ -50,8 +50,8 @@
             />
 
         <TextView
-            android:id="@+id/lblvrdomicilio"
-            android:text="Valor domicilio:  "
+            android:id="@+id/lblProducto"
+            android:text="Producto:  "
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

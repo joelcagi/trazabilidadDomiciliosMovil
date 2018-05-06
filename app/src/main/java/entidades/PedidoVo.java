@@ -5,6 +5,10 @@ package entidades;
  */
 public class PedidoVo {
     /*
+    Url del servicio en amazon
+     */
+    public static final String URL_AMAZON = "ec2-18-191-11-199.us-east-2.compute.amazonaws.com:8080/api/";
+    /*
     El codigo del pedido
      */
     private int idPedido;
@@ -21,38 +25,38 @@ public class PedidoVo {
      */
     private String telefonoCliente;
     /*
-    El vslor adicional por domicilio a una zona
+    El estado final del pedido a definir por parte del repartidor de domicilio
      */
-    private double costoDomicilioZona;
+    private int estadoPedido;
     /*
     El costo del pedido realizado
      */
     private double costoPedido;
     /*
-    El estado final del pedido a definir por parte del repartidor de domicilio
+    El nombre del producto a entregar con el pedido
      */
-    private String estadoPedido;
+    private String nombreProducto;
     /*
     la fecha en la que se toma el pedido
      */
-    private String fechaDespacho;
+    private String horaDespacho;
     /*
     fecha en la que se entrega el pedido
      */
-    private String fechaEntrega;
+    private String horaEntrega;
 
     public PedidoVo(int idPedido, String nombreCliente, String direccionCliente,
-                    String telefonoCliente, double costoDomicilioZona, double costoPedido,
-                    String estadoPedido, String fechaDespacho, String fechaEntrega) {
+                    String telefonoCliente, int estadoPedido, double costoPedido,
+                    String nombreProducto, String horaDespacho, String horaEntrega) {
         this.idPedido = idPedido;
         this.nombreCliente = nombreCliente;
         this.direccionCliente = direccionCliente;
         this.telefonoCliente = telefonoCliente;
-        this.costoDomicilioZona = costoDomicilioZona;
-        this.costoPedido = costoPedido;
         this.estadoPedido = estadoPedido;
-        this.fechaDespacho = fechaDespacho;
-        this.fechaEntrega = fechaEntrega;
+        this.costoPedido = costoPedido;
+        this.nombreProducto = nombreProducto;
+        this.horaDespacho = horaDespacho;
+        this.horaEntrega = horaEntrega;
     }
 
     public int getIdPedido() {
@@ -87,12 +91,12 @@ public class PedidoVo {
         this.telefonoCliente = telefonoCliente;
     }
 
-    public double getCostoDomicilioZona() {
-        return costoDomicilioZona;
+    public int getEstadoPedido() {
+        return estadoPedido;
     }
 
-    public void setCostoDomicilioZona(double costoDomicilioZona) {
-        this.costoDomicilioZona = costoDomicilioZona;
+    public void setEstadoPedido(int estadoPedido) {
+        this.estadoPedido = estadoPedido;
     }
 
     public double getCostoPedido() {
@@ -103,27 +107,27 @@ public class PedidoVo {
         this.costoPedido = costoPedido;
     }
 
-    public String getEstadoPedido() {
-        return estadoPedido;
+    public String getNombreProducto() {
+        return nombreProducto;
     }
 
-    public void setEstadoPedido(String estadoPedido) {
-        this.estadoPedido = estadoPedido;
+    public void setNombreProducto(String nombreProducto) {
+        this.nombreProducto = nombreProducto;
     }
 
-    public String getFechaDespacho() {
-        return fechaDespacho;
+    public String getHoraDespacho() {
+        return horaDespacho;
     }
 
-    public void setFechaDespacho(String fechaDespacho) {
-        this.fechaDespacho = fechaDespacho;
+    public void setHoraDespacho(String horaDespacho) {
+        this.horaDespacho = horaDespacho;
     }
 
-    public String getFechaEntrega() {
-        return fechaEntrega;
+    public String getHoraEntrega() {
+        return horaEntrega;
     }
 
-    public void setFechaEntrega(String fechaEntrega) {
-        this.fechaEntrega = fechaEntrega;
+    public void setHoraEntrega(String horaEntrega) {
+        this.horaEntrega = horaEntrega;
     }
 }

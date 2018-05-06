@@ -1,8 +1,10 @@
 package adaptadorPedido;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +18,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.yeye.rchispacarbonapp.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import entidades.PedidoVo;
 
@@ -43,9 +53,14 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
     private View.OnClickListener listener;
 
     /*
-     * Bandera para establecer un cambio de estado de pedido
+     * Botón para bloquear despues de cambiar estado pedido
      */
-    private boolean flag = true;
+    private Button boton = null;
+
+    /*
+    Spinner para bloquear despues de cambiar estado pedido
+     */
+    private Spinner spinner = null;
 
     /**
      * Constructor de la clase AdaptadorPedido
@@ -87,10 +102,10 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
         holder.txtCliente.setText("Cliente: " + listaPedidos.get(position).getNombreCliente());
         holder.txtDireccion.setText("Dirección: " + listaPedidos.get(position).getDireccionCliente());
         holder.txtTelefono.setText("Telefono: " + listaPedidos.get(position).getTelefonoCliente());
-        holder.txtVrDomicilio.setText("Costo domicilio: " + listaPedidos.get(position).getCostoDomicilioZona());
+        holder.txtProducto.setText("Producto: " + listaPedidos.get(position).getNombreProducto());
         holder.txtVrPedido.setText("Costo Pedido: " + listaPedidos.get(position).getCostoPedido());
-        holder.txtFechaInicio.setText("Fecha Despacho: " + listaPedidos.get(position).getFechaDespacho());
-        holder.txtFechaFin.setText("Fecha Entrega: " + listaPedidos.get(position).getFechaEntrega());
+        holder.txtFechaInicio.setText("Fecha Despacho: " + listaPedidos.get(position).getHoraDespacho());
+        holder.txtFechaFin.setText("Fecha Entrega: " + listaPedidos.get(position).getHoraEntrega());
 
         /*
         Armar dirección parametro Google Maps
@@ -162,11 +177,20 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      * @param holder el spinner del pedido en especifico
      * @param posRV  la posición en la que se encuentra en el Recyclerview
      */
-    public void CapturarEstadoPedido(PedidosViewHolder holder, final int posRV) {
+    public void CapturarEstadoPedido(final PedidosViewHolder holder, final int posRV) {
         holder.comboestado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                listaPedidos.get(posRV).setEstadoPedido(adapterView.getItemAtPosition(i).toString());
+                spinner = holder.comboestado.findViewById(R.id.spinnerEstadoPedido);
+                if (adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("Entregado")) {
+                    listaPedidos.get(posRV).setEstadoPedido(4);
+                } else if (adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("Incidencia")) {
+                    listaPedidos.get(posRV).setEstadoPedido(5);
+                } else if (adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("Cancelado")) {
+                    listaPedidos.get(posRV).setEstadoPedido(6);
+                } else if (adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("Erroneo")) {
+                    listaPedidos.get(posRV).setEstadoPedido(7);
+                }
             }
 
             @Override
@@ -184,34 +208,30 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      * @param posRV   la posición en el recyclerview
      */
     public void eventoCambioPedido(final PedidosViewHolder holder, final int codigoP, final int posRV) {
+
         holder.btnCambiarEstado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                boton = holder.btnCambiarEstado.findViewById(R.id.btnCambioEstado);
 
-                //Implementación del AlertDialog
-                final Context viewD = view.getContext();
+                generarAlertDialog(holder, view.getContext(), codigoP, posRV, boton);
 
-                generarAlertDialog(view, viewD, codigoP, posRV);
             }
         });
 
-        if (flag == false) {
-            holder.btnCambiarEstado.setEnabled(true);
-            flag = true;
-        }
 
     }
 
     /**
      * Método para generar una alerta antes de cambiar estado de pedido
      *
-     * @param view    la vista
      * @param viewD   el contexto de la vista
      * @param codigoP el código del pedido
      * @param posRV   la posición del recyclerview
      */
-    public void generarAlertDialog(View view, final Context viewD, int codigoP, final int posRV) {
-        new AlertDialog.Builder(view.getContext())
+    public void generarAlertDialog(final PedidosViewHolder holder, final Context viewD,
+                                   int codigoP, final int posRV, final Button boton) {
+        new AlertDialog.Builder(viewD)
                 .setTitle("Estado Pedido")
                 .setMessage("¿Desea cambiar el estado del pedido "
                         + codigoP + " a '"
@@ -224,13 +244,23 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                                 //se pasan los parametros a la BD del nuevo estado y la hora
                                 // y fecha que se cambió
 
-                                listaPedidos.get(posRV).setFechaEntrega(obtenerFechaActual());
+                                listaPedidos.get(posRV).setHoraEntrega(obtenerHoraActual());
 
-                                Toast.makeText(viewD, "Cambio estado pedido a '" +
-                                                listaPedidos.get(posRV).getEstadoPedido() +
-                                                "' a las " + listaPedidos.get(posRV).getFechaEntrega(),
+                                holder.txtFechaFin.setText("Fecha Entrega: " + listaPedidos.get(posRV).getHoraEntrega());
+
+                                //Hacer petición POST
+
+
+                                Toast.makeText(viewD, "Cambio estado pedido"
+                                                + listaPedidos.get(posRV).getIdPedido()
+                                                + " a '" + listaPedidos.get(posRV).getEstadoPedido()
+                                                + "' a las " + listaPedidos.get(posRV).getHoraEntrega(),
                                         Toast.LENGTH_SHORT).show();
-                                flag = false;
+
+                                boton.setEnabled(false);
+                                boton.setTextColor(Color.LTGRAY);
+                                boton.setBackgroundColor(Color.GRAY);
+                                spinner.setEnabled(false);
 
                                 dialog.cancel();
                             }
@@ -238,7 +268,6 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
-                        flag = true;
                         dialog.cancel();
                     }
                 }).show();
@@ -283,10 +312,42 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      *
      * @return
      */
-    public String obtenerFechaActual() {
+    public String obtenerHoraActual() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    private void actualizarServicio(final Context context, final int posRV) {
+        final ProgressDialog loading = ProgressDialog.show(context, "Por favor espere...",
+                "Actualizando datos...", false, false);
+
+        String REGISTER_URL = PedidoVo.URL_AMAZON + "asignados?id=" + listaPedidos.get(posRV).getIdPedido()
+                + "&state=" + listaPedidos.get(posRV).getEstadoPedido() + "&entregado=" + listaPedidos.get(posRV).getHoraEntrega();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                loading.dismiss();
+                Toast.makeText(context, response, Toast.LENGTH_LONG).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                loading.dismiss();
+                Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("state", "" + listaPedidos.get(posRV).getEstadoPedido());
+                params.put("entregado", listaPedidos.get(posRV).getHoraEntrega());
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
     }
 
     /**
@@ -325,7 +386,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      */
     public class PedidosViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtidPedido, txtCliente, txtDireccion, txtTelefono, txtVrDomicilio, txtVrPedido,
+        TextView txtidPedido, txtCliente, txtDireccion, txtTelefono, txtProducto, txtVrPedido,
                 txtFechaInicio, txtFechaFin;
         Spinner comboestado;
         Button btnCambiarEstado, btnVerRuta;
@@ -342,11 +403,10 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
             txtCliente = itemView.findViewById(R.id.lblnombrecliente);
             txtDireccion = itemView.findViewById(R.id.lbldireccioncliente);
             txtTelefono = itemView.findViewById(R.id.lbltelefonocliente);
-            txtVrDomicilio = itemView.findViewById(R.id.lblvrdomicilio);
+            txtProducto = itemView.findViewById(R.id.lblProducto);
             txtVrPedido = itemView.findViewById(R.id.lblvrpedido);
             txtFechaInicio = itemView.findViewById(R.id.lblfechaInicio);
             txtFechaFin = itemView.findViewById(R.id.lblfechaFin);
-
             comboestado = itemView.findViewById(R.id.spinnerEstadoPedido);
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(itemView.getContext(),
                     R.array.combo_estados,

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,6 +20,8 @@ import com.example.yeye.rchispacarbonapp.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import entidades.PedidoVo;
 
 /**
  * Activity que permite a un repartidor iniciar sesión en la aplicación
@@ -88,6 +89,8 @@ public class loginActivity extends AppCompatActivity {
 
                 //proceso de la api rest GET
 
+
+
                 //consultarUsuario(usuario, contrasenia);
 
                 Intent i = new Intent(getApplicationContext(), PedidoActivity.class);
@@ -131,34 +134,31 @@ public class loginActivity extends AppCompatActivity {
         pDialog.setMessage("Cargando...");
         pDialog.show();
 
-        String url = "PONER_URL_DE_OME?correo(REVISAR NOMBRE)=" + usuario.trim()
+        String url = PedidoVo.URL_AMAZON + "asignados?correo(REVISAR NOMBRE)=" + usuario.trim()
                 + "&contrasena(REVISAR NOMBRE)=" + contrasena.trim();
 
         jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                pDialog.hide();
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pDialog.hide();
 
-                JSONArray json = response.optJSONArray("codigoUsuario (REVISAR BD)");
-                JSONObject jsonObject = null;
+                        JSONArray json = response.optJSONArray("codigoUsuario (REVISAR BD)");
+                        JSONObject jsonObject = null;
 
-                try {
-                    jsonObject = json.getJSONObject(0);
-                    idUsuario = jsonObject.optInt("id_usuario(REVISAR BD)");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                        try {
+                            jsonObject = json.getJSONObject(0);
+                            idUsuario = jsonObject.optInt("id_usuario(REVISAR BD)");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
-            }
-        }, new Response.ErrorListener() {
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(loginActivity.this, "Usuario no registrado "
-                        + error.toString(), Toast.LENGTH_LONG).show();
-                System.out.println();
+                mostrarMensaje("Usuario no registrado " + error.toString());
                 pDialog.hide();
-                Log.d("ERROR: ", error.toString());
             }
         });
 
