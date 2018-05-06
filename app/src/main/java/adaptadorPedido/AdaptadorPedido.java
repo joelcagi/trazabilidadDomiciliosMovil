@@ -1,5 +1,6 @@
 package adaptadorPedido;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,7 +46,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
     /*
     lista para almacenar los datos de un pedido
      */
-    ArrayList<PedidoVo> listaPedidos;
+    private ArrayList<PedidoVo> listaPedidos;
 
     /*
     oyente del evento de clic sobre un objeto del recyclerview
@@ -134,11 +135,10 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
         /*
         Capturar el estado del pedido
          */
-        final int posRV = position;
-        CapturarEstadoPedido(holder, posRV);
+        CapturarEstadoPedido(holder, position);
 
         //Evento para cambiar el estado del pedido y subirlo a la BD
-        eventoCambioPedido(holder, codigoP, posRV);
+        eventoCambioPedido(holder, codigoP, position);
 
         //Evento para generar la ruta del pedido de un cliente
         eventoGenerarRuta(holder, cadena);
@@ -190,6 +190,8 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                     listaPedidos.get(posRV).setEstadoPedido(6);
                 } else if (adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("Erroneo")) {
                     listaPedidos.get(posRV).setEstadoPedido(7);
+                }else{
+                    listaPedidos.get(posRV).setEstadoPedido(0);
                 }
             }
 
@@ -235,11 +237,17 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
                 .setTitle("Estado Pedido")
                 .setMessage("¿Desea cambiar el estado del pedido "
                         + codigoP + " a '"
-                        + listaPedidos.get(posRV).getEstadoPedido() + "'?")
+                        + spinner.getSelectedItem() + "'?")
                 .setPositiveButton("Si",
                         new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int id) {
+
+                                if (listaPedidos.get(posRV).getEstadoPedido()==0){
+                                    Toast.makeText(viewD, "Debe seleccionar un estado de pedido",
+                                            Toast.LENGTH_SHORT).show();
+                                   return;
+                                }
 
                                 //se pasan los parametros a la BD del nuevo estado y la hora
                                 // y fecha que se cambió
@@ -253,7 +261,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
 
                                 Toast.makeText(viewD, "Cambio estado pedido"
                                                 + listaPedidos.get(posRV).getIdPedido()
-                                                + " a '" + listaPedidos.get(posRV).getEstadoPedido()
+                                                + " a '" + spinner.getSelectedItem()
                                                 + "' a las " + listaPedidos.get(posRV).getHoraEntrega(),
                                         Toast.LENGTH_SHORT).show();
 
@@ -315,7 +323,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
      * @return
      */
     public String obtenerHoraActual() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
     }

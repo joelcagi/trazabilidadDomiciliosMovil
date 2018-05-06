@@ -144,7 +144,7 @@ public class loginActivity extends AppCompatActivity {
                         pDialog.hide();
 
                         JSONArray json = response.optJSONArray("codigoUsuario (REVISAR BD)");
-                        JSONObject jsonObject = null;
+                        JSONObject jsonObject;
 
                         try {
                             jsonObject = json.getJSONObject(0);

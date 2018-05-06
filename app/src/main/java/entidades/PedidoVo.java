@@ -63,32 +63,16 @@ public class PedidoVo {
         return idPedido;
     }
 
-    public void setIdPedido(int idPedido) {
-        this.idPedido = idPedido;
-    }
-
     public String getNombreCliente() {
         return nombreCliente;
-    }
-
-    public void setNombreCliente(String nombreCliente) {
-        this.nombreCliente = nombreCliente;
     }
 
     public String getDireccionCliente() {
         return direccionCliente;
     }
 
-    public void setDireccionCliente(String direccionCliente) {
-        this.direccionCliente = direccionCliente;
-    }
-
     public String getTelefonoCliente() {
         return telefonoCliente;
-    }
-
-    public void setTelefonoCliente(String telefonoCliente) {
-        this.telefonoCliente = telefonoCliente;
     }
 
     public int getEstadoPedido() {
@@ -103,24 +87,12 @@ public class PedidoVo {
         return costoPedido;
     }
 
-    public void setCostoPedido(double costoPedido) {
-        this.costoPedido = costoPedido;
-    }
-
     public String getNombreProducto() {
         return nombreProducto;
     }
 
-    public void setNombreProducto(String nombreProducto) {
-        this.nombreProducto = nombreProducto;
-    }
-
     public String getHoraDespacho() {
         return horaDespacho;
-    }
-
-    public void setHoraDespacho(String horaDespacho) {
-        this.horaDespacho = horaDespacho;
     }
 
     public String getHoraEntrega() {
