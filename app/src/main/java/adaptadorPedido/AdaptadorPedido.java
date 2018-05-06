@@ -297,13 +297,15 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
             pos = 2;
         }
 
+        StringBuilder auxBuilder = new StringBuilder(aux);
         for (int i = pos; i < direccionI.trim().length(); i++) {
             if (direccionI.charAt(i) == ' ') {
-                aux = aux + "+";
+                auxBuilder.append("+");
             } else {
-                aux = aux + direccionI.charAt(i);
+                auxBuilder.append(direccionI.charAt(i));
             }
         }
+        aux = auxBuilder.toString();
         return aux;
     }
 
