@@ -28,12 +28,12 @@ import entidades.PedidoVo;
  *
  * @author Calderón - Gomez - Guerrero
  */
-public class loginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     /*
     Botón para realizar la validación de logueo a la aplicación móvil
      */
-    private Button Entrar;
+    private Button entrar;
 
     /*
     Campo para almacenar el usuario
@@ -74,8 +74,8 @@ public class loginActivity extends AppCompatActivity {
         request = Volley.newRequestQueue(this);
 
         //Definición del evento de botón para acceder a los pedidos del repartidor
-        Entrar = findViewById(R.id.btnEntrar);
-        Entrar.setOnClickListener(new View.OnClickListener() {
+        entrar = findViewById(R.id.btnEntrar);
+        entrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -88,9 +88,6 @@ public class loginActivity extends AppCompatActivity {
                 final String contrasenia = txtContrasenia.getEditText().getText().toString();
 
                 //proceso de la api rest GET
-
-
-
                 //consultarUsuario(usuario, contrasenia);
 
                 Intent i = new Intent(getApplicationContext(), PedidoActivity.class);
@@ -150,7 +147,7 @@ public class loginActivity extends AppCompatActivity {
                             jsonObject = json.getJSONObject(0);
                             idUsuario = jsonObject.optInt("id_usuario(REVISAR BD)");
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            mostrarMensaje(e.getMessage());
                         }
 
                     }

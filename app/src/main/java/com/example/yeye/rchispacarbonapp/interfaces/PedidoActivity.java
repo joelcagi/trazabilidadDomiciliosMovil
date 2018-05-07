@@ -18,7 +18,7 @@ public class PedidoActivity extends AppCompatActivity implements ListaPedidosFra
     private ListaPedidosFragment listaFragment;
 
     /*
-    Bundle para traer el código del repartidor desde loginActivity
+    Bundle para traer el código del repartidor desde LoginActivity
      */
     private Bundle codigoR;
 

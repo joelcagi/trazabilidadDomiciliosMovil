@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import adaptadorPedido.AdaptadorPedido;
+import adaptador_pedido.AdaptadorPedido;
 import entidades.PedidoVo;
 
 /**
@@ -40,14 +40,7 @@ import entidades.PedidoVo;
  */
 public class ListaPedidosFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private OnFragmentInteractionListener mListener;
 
     /*
@@ -89,8 +82,6 @@ public class ListaPedidosFragment extends Fragment {
     public static ListaPedidosFragment newInstance(String param1, String param2) {
         ListaPedidosFragment fragment = new ListaPedidosFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -102,9 +93,6 @@ public class ListaPedidosFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-
             //Traer codigo repartidor
             codigoR = getArguments().getInt("Codigo_Repartidor", 0);
         }
@@ -174,14 +162,14 @@ public class ListaPedidosFragment extends Fragment {
 
         //Proceso para realizar la petición GET
 
-        String DATA_URL = PedidoVo.URL_AMAZON + "asignados?id=" + codigoR;
+        String registrar_URL = PedidoVo.URL_AMAZON + "asignados?id=" + codigoR;
         final ProgressDialog loading = ProgressDialog.show(this.getContext(),
                 "Por favor espere...",
                 "Actualizando datos...",
                 false,
                 false);
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-                DATA_URL,
+                registrar_URL,
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -191,16 +179,16 @@ public class ListaPedidosFragment extends Fragment {
                             //Lista obtenida del servicio
                             JSONArray lista = response.optJSONArray("factura");
                             for (int i = 0; i < lista.length(); i++) {
-                                JSONObject json_data = lista.getJSONObject(i);
-                                PedidoVo obj = new PedidoVo(json_data.getInt("id"),
-                                        json_data.getString("cliente.nombre"),
-                                        json_data.getString("cliente.direccion"),
-                                        json_data.getString("cliente.id"),
-                                        json_data.getInt("state"),
-                                        json_data.getDouble("total"),
-                                        json_data.getString("items.nombre"),
-                                        json_data.getString("creado"),
-                                        json_data.getString("entregado"));
+                                JSONObject jsonData = lista.getJSONObject(i);
+                                PedidoVo obj = new PedidoVo(jsonData.getInt("id"),
+                                        jsonData.getString("cliente.nombre"),
+                                        jsonData.getString("cliente.direccion"),
+                                        jsonData.getString("cliente.id"),
+                                        jsonData.getInt("state"),
+                                        jsonData.getDouble("total"),
+                                        jsonData.getString("items.nombre"),
+                                        jsonData.getString("creado"),
+                                        jsonData.getString("entregado"));
                                 listaPedido.add(obj);
                             }
 
@@ -266,6 +254,7 @@ public class ListaPedidosFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
+        //No se usa esta interface
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
