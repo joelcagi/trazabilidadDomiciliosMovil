@@ -332,8 +332,7 @@ public class AdaptadorPedido extends RecyclerView.Adapter<AdaptadorPedido.Pedido
         final ProgressDialog loading = ProgressDialog.show(context, "Por favor espere...",
                 "Actualizando datos...", false, false);
 
-        String REGISTER_URL = PedidoVo.URL_AMAZON + "asignados?id=" + listaPedidos.get(posRV).getIdPedido()
-                + "&state=" + listaPedidos.get(posRV).getEstadoPedido() + "&entregado=" + listaPedidos.get(posRV).getHoraEntrega();
+        String REGISTER_URL = PedidoVo.URL_AMAZON + "asignados?id=" + listaPedidos.get(posRV).getIdPedido();
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL, new Response.Listener<String>() {
             @Override
