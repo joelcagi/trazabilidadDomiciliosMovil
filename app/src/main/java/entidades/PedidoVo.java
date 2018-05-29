@@ -7,7 +7,7 @@ public class PedidoVo {
     /*
     Url del servicio en amazon
      */
-    public static final String URL_AMAZON = "ec2-18-191-11-199.us-east-2.compute.amazonaws.com:8080/api/";
+    public static final String URL_AMAZON = "http://ec2-18-220-148-111.us-east-2.compute.amazonaws.com:8080//api/";
     /*
     El codigo del pedido
      */

@@ -21,7 +21,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import entidades.PedidoVo;
+import java.util.HashMap;
+import java.util.Map;
+
+import static entidades.PedidoVo.URL_AMAZON;
 
 /**
  * Activity que permite a un repartidor iniciar sesión en la aplicación
@@ -90,15 +93,23 @@ public class LoginActivity extends AppCompatActivity {
                 //proceso de la api rest GET
                 //consultarUsuario(usuario, contrasenia);
 
-                Intent i = new Intent(getApplicationContext(), PedidoActivity.class);
+                if(usuario.equalsIgnoreCase("diego@email.com")&&contrasenia.equals("12345")){
 
-                //PENDIENTE PASAR PARAMETRO DE CODIGO DE REPARTIDOR
-                i.putExtra("Codigo_Repartidor", idUsuario);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                        Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Intent i = new Intent(getApplicationContext(), PedidoActivity.class);
 
-                //Iniciar la actividad
-                startActivity(i);
+                    //PENDIENTE PASAR PARAMETRO DE CODIGO DE REPARTIDOR
+                    i.putExtra("Codigo_Repartidor", idUsuario);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                            Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    //Iniciar la actividad
+                    startActivity(i);
+                }else{
+                    mostrarMensaje("El usuario no se encuentra en la base de datos");
+                    txtUsuario.getEditText().setText("");
+                    txtContrasenia.getEditText().setText("");
+                }
+
 
             }
         });
@@ -131,21 +142,28 @@ public class LoginActivity extends AppCompatActivity {
         pDialog.setMessage("Cargando...");
         pDialog.show();
 
-        String url = PedidoVo.URL_AMAZON + "asignados?correo(REVISAR NOMBRE)=" + usuario.trim()
-                + "&contrasena(REVISAR NOMBRE)=" + contrasena.trim();
+        String url = URL_AMAZON + "login";
 
-        jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+        // POST parameters
+        Map<String, String> params = new HashMap<>();
+        params.put("email", usuario);
+        params.put("password", contrasena);
+
+        JSONObject jsonObj = new JSONObject(params);
+
+        jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         pDialog.hide();
 
-                        JSONArray json = response.optJSONArray("codigoUsuario (REVISAR BD)");
+                        JSONArray json = response.optJSONArray("window.json");
                         JSONObject jsonObject;
 
                         try {
                             jsonObject = json.getJSONObject(0);
                             idUsuario = jsonObject.optInt("id_usuario(REVISAR BD)");
+
                         } catch (JSONException e) {
                             mostrarMensaje(e.getMessage());
                         }

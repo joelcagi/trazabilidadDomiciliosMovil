@@ -1,5 +1,6 @@
 package fragments;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +25,11 @@ import com.example.yeye.rchispacarbonapp.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import adaptador_pedido.AdaptadorPedido;
 import entidades.PedidoVo;
@@ -94,7 +100,7 @@ public class ListaPedidosFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             //Traer codigo repartidor
-            codigoR = getArguments().getInt("Codigo_Repartidor", 0);
+            codigoR = getArguments().getInt("Codigo_Repartidor", 1);
         }
     }
 
@@ -119,20 +125,34 @@ public class ListaPedidosFragment extends Fragment {
         //llenarListaPedidos();
 
 
-        //Borrar luego
-        String fecha = "11:30:30";
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
 
-        listaPedido.add(new PedidoVo(1, "John", "k 20 2 60 las palmas",
-                "3154316670", 4, 10000, "Pollo",
+        String fecha = dateFormat.format(date);
+
+        listaPedido.add(new PedidoVo(1, "JAVIER  MARTINEZ", "k 20 2 60 las palmas",
+                "7467916", 3, 10000, "Pollo",
                 fecha, fecha));
-        listaPedido.add(new PedidoVo(2, "John", "c 22 13 26 ",
-                "3154316670", 5, 10000, "Almuerzo",
+        listaPedido.add(new PedidoVo(2, "ILBIA GIRALDO", "c 22 13 26",
+                "7400823", 3, 10000, "Almuerzo",
                 fecha, fecha));
-        listaPedido.add(new PedidoVo(3, "John", "k 21a 14 33",
-                "3154316670", 7, 10000, "Entregado",
+        listaPedido.add(new PedidoVo(3, "ALEJANDRO MARULANDA", "k 21a 14 33",
+                "3113201019", 3, 10000, "Pollo",
+                fecha, fecha));
+        listaPedido.add(new PedidoVo(4, "YEFERSON GOMEZ", "C 14N 10 05",
+                "3146857668", 3, 10000, "Almuerzo",
+                fecha, fecha));
+        listaPedido.add(new PedidoVo(5, "CRISTINA VALENCIA", "K 15 23 27",
+                "7450351", 3, 10000, "Almuerzo",
+                fecha, fecha));
+        listaPedido.add(new PedidoVo(6, "JONNY CASTELLANOS", "A 19 24N 04",
+                "7477464", 3, 10000, "Pollo",
+                fecha, fecha));
+        listaPedido.add(new PedidoVo(7, "PROPLAT S.A", "K 23 19 38",
+                "7427697", 3, 10000, "Almuerzo",
                 fecha, fecha));
 
-        //Borrar luego
+        //Borrar luego*/
 
         //Enviar los datos capturados con la petición GET al adaptador para mostrarlos en el Recyclerview
         AdaptadorPedido adapter = new AdaptadorPedido(listaPedido);
@@ -162,22 +182,27 @@ public class ListaPedidosFragment extends Fragment {
 
         //Proceso para realizar la petición GET
 
-        String registrar_URL = PedidoVo.URL_AMAZON + "asignados?id=" + codigoR;
+        String registrar_URL = PedidoVo.URL_AMAZON + "asignados";
         final ProgressDialog loading = ProgressDialog.show(this.getContext(),
                 "Por favor espere...",
                 "Actualizando datos...",
                 false,
                 false);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("state", "" + codigoR);
+        JSONObject jsonObj = new JSONObject(params);
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                 registrar_URL,
-                null,
+                jsonObj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         loading.dismiss();
                         try {
                             //Lista obtenida del servicio
-                            JSONArray lista = response.optJSONArray("factura");
+                            JSONArray lista = response.getJSONArray("window.json");
                             for (int i = 0; i < lista.length(); i++) {
                                 JSONObject jsonData = lista.getJSONObject(i);
                                 PedidoVo obj = new PedidoVo(jsonData.getInt("id"),
@@ -200,7 +225,9 @@ public class ListaPedidosFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 loading.dismiss();
+                Log.d("error en peticion:", error.getMessage());
                 mostrarMensaje("Error en petición:" + error.getMessage());
+                error.printStackTrace();
             }
         });
         RequestQueue requestQueue = Volley.newRequestQueue(this.getContext());
